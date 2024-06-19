@@ -8,7 +8,7 @@ import (
 	"go.uber.org/zap"
 )
 
-var text = `I am John Doe, and I live in Disney Land and I am 25 years old.`
+var text = `Jane was travelling to London from her home in New York on a rainy day. She was 25 years old.`
 
 func main() {
 	ctx := context.Background()
