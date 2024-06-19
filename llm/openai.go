@@ -2,6 +2,7 @@ package llm
 
 import (
 	"context"
+
 	"github.com/instructor-ai/instructor-go/pkg/instructor"
 	"github.com/sashabaranov/go-openai"
 	"go.uber.org/zap"
@@ -15,9 +16,9 @@ type OpenAIClient struct {
 }
 
 type Person struct {
-	Name     string `json:"name"          jsonschema:"title=the name,description=The name of the person,example=joe,example=lucy"`
-	Age      int    `json:"age,omitempty" jsonschema:"title=the age,description=The age of the person,example=25,example=67"`
-	Location string `json:"location,omitempty" jsonschema:"location=the location,description=The location of the person,example=wimbledon,example=wimbledon"`
+	Name     string `json:"name"          jsonschema:"title=the name,description=The name of the person,example=joe,example=lucy"  validate:"required"`
+	Age      int    `json:"age,omitempty" jsonschema:"title=the age,description=The age of the person,example=25,example=67"  validate:"required"`
+	Location string `json:"location,omitempty" jsonschema:"location=the location,description=The location of the person,example=wimbledon,example=wimbledon"  validate:"required"`
 }
 
 func NewOpenAIClient(logger *zap.Logger, key string, maxTries int) *OpenAIClient {
@@ -29,12 +30,13 @@ func NewOpenAIClient(logger *zap.Logger, key string, maxTries int) *OpenAIClient
 			openai.NewClient(key),
 			instructor.WithMode(instructor.ModeJSON),
 			instructor.WithMaxRetries(maxTries),
+			instructor.WithValidation(),
 		),
 	}
 }
 
 func (oai *OpenAIClient) ExtractPersonalInformation(ctx context.Context, content string) (*Person, error) {
-	per := &Person{}
+	var per Person
 	_, err := oai.Client.CreateChatCompletion(
 		ctx,
 		openai.ChatCompletionRequest{
@@ -42,7 +44,7 @@ func (oai *OpenAIClient) ExtractPersonalInformation(ctx context.Context, content
 			Messages: []openai.ChatCompletionMessage{
 				{
 					Role:    openai.ChatMessageRoleUser,
-					Content: "Extract name, age and location:" + content,
+					Content: "Extract name, age and location: " + content,
 				},
 			},
 		},
@@ -51,5 +53,5 @@ func (oai *OpenAIClient) ExtractPersonalInformation(ctx context.Context, content
 	if err != nil {
 		return nil, err
 	}
-	return per, nil
+	return &per, nil
 }

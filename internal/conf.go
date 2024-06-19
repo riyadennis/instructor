@@ -7,7 +7,7 @@ import (
 )
 
 type Config struct {
-	LlmApiKey     string `arg:"env:LLM_API_KEY" validate:"required"`
+	OpenAIKey     string `arg:"env:OPENAI_API_KEY" validate:"required"`
 	APIMaxRetries int    `arg:"env:MAX_RETRIES" default:"3"`
 }
 

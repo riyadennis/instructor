@@ -20,7 +20,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	openAI := llm.NewOpenAIClient(logger, config.LlmApiKey, config.APIMaxRetries)
+	openAI := llm.NewOpenAIClient(logger, config.OpenAIKey, config.APIMaxRetries)
 	person, err := openAI.ExtractPersonalInformation(ctx, text)
 	if err != nil {
 		panic(err)
